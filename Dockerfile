@@ -1,17 +1,11 @@
-FROM eclipse-temurin:17-jdk-focal AS builder
-WORKDIR /app
+FROM tomcat:10.1-jdk17
 
-# Copy complete FinTrace folder
-COPY FinTrace/ .
+# Remove default apps
+RUN rm -rf /usr/local/tomcat/webapps/*
 
-RUN chmod +x gradlew
-RUN ./gradlew bootJar -x test
+# Copy WAR file
+COPY FinTrace/FinTrace.war /usr/local/tomcat/webapps/ROOT.war
 
-FROM eclipse-temurin:17-jre-focal
-WORKDIR /app
+EXPOSE 8080
 
-COPY --from=builder /app/build/libs/*.jar app.jar
-
-EXPOSE 9090
-
-ENTRYPOINT ["java", "-jar", "app.jar"]
+CMD ["catalina.sh", "run"]
