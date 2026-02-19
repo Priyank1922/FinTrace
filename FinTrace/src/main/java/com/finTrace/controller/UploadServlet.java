@@ -10,13 +10,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.*;
 import java.util.*;
-import java.net.URLEncoder;
-
 @WebServlet("/upload")
 @MultipartConfig(
-    fileSizeThreshold = 1024 * 1024 * 2, // 2MB
-    maxFileSize = 1024 * 1024 * 50,      // 50MB
-    maxRequestSize = 1024 * 1024 * 60    // 60MB
+    fileSizeThreshold = 1024 * 1024, // 1 MB
+    maxFileSize = 1024 * 1024 * 10,  // 10 MB
+    maxRequestSize = 1024 * 1024 * 15 // 15 MB
 )
 public class UploadServlet extends HttpServlet {
     
@@ -24,62 +22,32 @@ public class UploadServlet extends HttpServlet {
                           HttpServletResponse response) 
             throws ServletException, IOException {
         
+        long startTime = System.currentTimeMillis();
+        
         try {
             // Get uploaded file
             Part filePart = request.getPart("csvFile");
             
-            // Check if file exists
             if (filePart == null || filePart.getSize() == 0) {
-                redirectError(response, "No file uploaded", 
-                    "Please select a CSV file to upload.", "file_missing");
+                response.sendRedirect("index.jsp?error=No file uploaded");
                 return;
             }
             
             String fileName = filePart.getSubmittedFileName();
-            long fileSize = filePart.getSize();
-            
-            // Check file extension
             if (!fileName.toLowerCase().endsWith(".csv")) {
-                redirectError(response, "Invalid file type", 
-                    "File must be a CSV. You uploaded: " + fileName, "invalid_type");
+                response.sendRedirect("index.jsp?error=Only CSV files are allowed");
                 return;
             }
             
-            // Check file size (max 10MB)
-            if (fileSize > 10 * 1024 * 1024) {
-                redirectError(response, "File too large", 
-                    "File size: " + (fileSize / 1024 / 1024) + "MB. Max allowed: 10MB", "file_too_large");
-                return;
-            }
-            
-            // Set start time for processing measurement
-            long startTime = System.currentTimeMillis();
+            System.out.println("Processing file: " + fileName);
             
             // Process CSV
             InputStream fileContent = filePart.getInputStream();
             CSVProcessor csvProcessor = new CSVProcessor();
-            
-            // First validate CSV format
-            Map<String, Object> validation = csvProcessor.validateCSV(fileContent);
-            fileContent.reset(); // Reset stream after validation
-            
-            if (!(boolean)validation.get("valid")) {
-                List<String> errors = (List<String>)validation.get("errors");
-                List<String> warnings = (List<String>)validation.get("warnings");
-                
-                String errorMsg = String.join(". ", errors);
-                String details = "Errors: " + errors + "\nWarnings: " + warnings;
-                
-                redirectError(response, errorMsg, details, "validation_failed");
-                return;
-            }
-            
-            // Process the CSV
             List<Transaction> transactions = csvProcessor.processCSV(fileContent);
             
-            if (transactions == null || transactions.isEmpty()) {
-                redirectError(response, "No transactions found", 
-                    "The CSV file contains no valid transaction data.", "empty_file");
+            if (transactions.isEmpty()) {
+                response.sendRedirect("index.jsp?error=No valid transactions found in CSV");
                 return;
             }
             
@@ -89,8 +57,12 @@ public class UploadServlet extends HttpServlet {
             List<FraudRing> rings = analyzer.detectAllPatterns(accounts, transactions);
             Map<String, Double> scores = analyzer.calculateScores(accounts, rings);
             
-            // 🔧 FIXED: Calculate processing time properly
             long processingTime = System.currentTimeMillis() - startTime;
+            double processingTimeSeconds = processingTime / 1000.0;
+            
+            System.out.println("Analysis completed in " + processingTime + "ms");
+            System.out.println("Found " + rings.size() + " fraud rings");
+            System.out.println("Found " + scores.size() + " suspicious accounts");
             
             // Generate JSON output
             JSONGenerator jsonGen = new JSONGenerator();
@@ -102,47 +74,15 @@ public class UploadServlet extends HttpServlet {
             session.setAttribute("accounts", accounts);
             session.setAttribute("rings", rings);
             session.setAttribute("transactions", transactions);
-            session.setAttribute("processingTime", processingTime / 1000.0);
-            session.setAttribute("fileName", fileName);
+            session.setAttribute("processingTime", processingTimeSeconds);
             
             // Redirect to dashboard
             response.sendRedirect("dashboard.jsp");
             
         } catch (Exception e) {
             e.printStackTrace();
-            
-            String errorMsg = e.getMessage();
-            String details = getStackTraceAsString(e);
-            
-            // Clean up error message for display
-            if (errorMsg == null || errorMsg.isEmpty()) {
-                errorMsg = "Unknown error occurred while processing the CSV file.";
-            }
-            
-            // Truncate if too long
-            if (errorMsg.length() > 200) {
-                errorMsg = errorMsg.substring(0, 200) + "...";
-            }
-            
-            redirectError(response, errorMsg, details, "exception");
+            String errorMsg = e.getMessage().replaceAll("[^a-zA-Z0-9\\s]", " ");
+            response.sendRedirect("error.jsp?message=" + errorMsg);
         }
-    }
-    
-    private void redirectError(HttpServletResponse response, String message, 
-                               String details, String type) throws IOException {
-        String encodedMessage = URLEncoder.encode(message, "UTF-8");
-        String encodedDetails = URLEncoder.encode(details, "UTF-8");
-        String encodedType = URLEncoder.encode(type, "UTF-8");
-        
-        response.sendRedirect("error.jsp?message=" + encodedMessage + 
-                             "&details=" + encodedDetails + 
-                             "&type=" + encodedType);
-    }
-    
-    private String getStackTraceAsString(Exception e) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        return sw.toString();
     }
 }
