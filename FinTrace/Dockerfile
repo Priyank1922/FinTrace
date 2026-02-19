@@ -1,16 +1,12 @@
-# Use official Tomcat image
+# Build stage
+FROM maven:3.8.4-openjdk-17 AS build
+WORKDIR /app
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# Run stage with Tomcat
 FROM tomcat:10.1-jdk17
-
-# Remove default apps
-RUN rm -rf /usr/local/tomcat/webapps/*
-
-# Copy your WAR file to Tomcat
-COPY FinTrace.war /usr/local/tomcat/webapps/ROOT.war
-
-# Expose port
+WORKDIR /usr/local/tomcat
+COPY --from=build /app/target/FinTrace.war webapps/ROOT.war
 EXPOSE 8080
-
-# Start Tomcat
 CMD ["catalina.sh", "run"]
-
-
