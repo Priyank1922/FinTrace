@@ -65,8 +65,8 @@ public class UploadServlet extends HttpServlet {
                     dbUrl = "jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbName;
                 } else {
                     // Local development fallback - UPDATE WITH YOUR TIDB CREDENTIALS
-                    dbUrl = "jdbc:mysql://gateway0t.ap-southeast-1.prod.aws.tidbcloud.com;
-                    dbUser = "GdLq3ttfVGdV1pD.root.root"; // Replace with your actual username
+                    dbUrl = "jdbc:mysql://GdLq3ttfVGdV1pD.root:fBAc3vpUpyRoJlbP@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/test?sslMode=VERIFY_IDENTITY;
+                    dbUser = "GdLq3ttfVGdV1pD.root"; // Replace with your actual username
                     dbPassword = "fBAc3vpUpyRoJlbP"; // Replace with your actual password
                 }
                 
