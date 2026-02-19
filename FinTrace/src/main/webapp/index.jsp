@@ -642,6 +642,65 @@
       transform: scale(1.1) rotate(2deg);
     }
 
+    /* ===== FAQ section (new) ===== */
+    .faq {
+      padding: 5rem 0;
+      background: #f9fcff;
+    }
+
+    .faq-grid {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      background: white;
+      border-radius: 30px;
+      margin-bottom: 1.2rem;
+      border: 1px solid #eef2f8;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .faq-item:hover {
+      border-color: var(--accent);
+      box-shadow: 0 5px 15px rgba(212, 161, 62, 0.1);
+    }
+
+    .faq-question {
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1.2rem;
+      color: var(--primary-dark);
+    }
+
+    .faq-question i {
+      color: var(--accent);
+      transition: transform 0.3s;
+    }
+
+    .faq-item.active .faq-question i {
+      transform: rotate(180deg);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      padding: 0 2rem;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.3s ease;
+      color: #475569;
+      line-height: 1.6;
+    }
+
+    .faq-item.active .faq-answer {
+      max-height: 300px; /* enough for content */
+      padding: 0 2rem 1.8rem 2rem;
+    }
+
     /* ===== CTA ===== */
     .cta {
       padding: 6rem 0;
@@ -798,7 +857,7 @@
   </style>
 </head>
 <body>
-  <!-- navbar with logo on right -->
+  <!-- navbar with logo on right (FAQ link added) -->
   <nav class="navbar">
     <div class="container nav-wrapper">
       <div class="nav-links">
@@ -806,7 +865,9 @@
         <a href="#features">Features</a>
         <a href="#how">How it works</a>
         <a href="#about">About</a>
+        <a href="#faq">FAQ</a>  <!-- new FAQ link -->
         <a href="#contact">Contact</a>
+        <a href="resource.jsp">Premium Resources</a>
         <a href="#upload" class="btn">Upload CSV</a>
       </div>
       <!-- logo on right -->
@@ -833,7 +894,7 @@
     </div>
   </section>
 
-  <!-- UPLOAD SECTION (New) -->
+  <!-- UPLOAD SECTION -->
   <section id="upload" class="upload-section">
     <div class="container">
       <div class="upload-card fade-up visible">
@@ -873,7 +934,7 @@ TXN003,ACC003,ACC001,7500.00,2024-01-15 14:20:00</pre>
     </div>
   </section>
 
-  <!-- metrics (fresh and simple) -->
+  <!-- metrics -->
   <section class="metrics">
     <div class="container">
       <div class="metrics-grid">
@@ -993,6 +1054,54 @@ TXN003,ACC003,ACC001,7500.00,2024-01-15 14:20:00</pre>
     </div>
   </section>
 
+  <!-- NEW FAQ SECTION -->
+  <section id="faq" class="faq">
+    <div class="container">
+      <div class="section-header fade-up">
+        <h2>Frequently Asked Questions</h2>
+        <p>Everything you need to know about FinTrace</p>
+      </div>
+      <div class="faq-grid fade-up delay-1">
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>What is money muling and how does FinTrace help?</h3>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Money muling involves transferring illegal funds through third-party accounts. FinTrace uses advanced analytics to detect patterns indicative of muling activity, helping you flag suspicious accounts early.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>Is my transaction data secure?</h3>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Absolutely. All data is encrypted in transit and at rest. We never share your data with third parties. Our platform is built with bank-grade security.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>What CSV format is required for upload?</h3>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <p>We require transaction_id, sender_id, receiver_id, amount, timestamp. Check the example in the upload section for reference.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>Can I integrate FinTrace with my existing systems?</h3>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Yes, we provide REST APIs and can work with your engineering team for seamless integration.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- CTA -->
   <section class="cta">
     <div class="container">
@@ -1021,7 +1130,7 @@ TXN003,ACC003,ACC001,7500.00,2024-01-15 14:20:00</pre>
           <h4 style="color:white;">Product</h4>
           <a href="#features">Features</a>
           <a href="#">Pricing</a>
-          <a href="#">FAQ</a>
+          <a href="#faq">FAQ</a>
         </div>
         <div class="footer-links">
           <h4 style="color:white;">Legal</h4>
@@ -1041,7 +1150,7 @@ TXN003,ACC003,ACC001,7500.00,2024-01-15 14:20:00</pre>
     </div>
   </footer>
 
-  <!-- scroll & counter script -->
+  <!-- scroll, counter & FAQ accordion script -->
   <script>
     (function() {
       // Smooth scroll for anchor links
@@ -1100,8 +1209,8 @@ TXN003,ACC003,ACC001,7500.00,2024-01-15 14:20:00</pre>
       const fileLabel = document.getElementById('fileLabel');
       const submitBtn = document.getElementById('submitBtn');
       const form = document.getElementById('uploadForm');
-      const btnText = submitBtn.querySelector('.btn-text');
-      const spinner = submitBtn.querySelector('.spinner');
+      const btnText = submitBtn?.querySelector('.btn-text');
+      const spinner = submitBtn?.querySelector('.spinner');
 
       if (fileInput) {
         fileInput.addEventListener('change', function(e) {
@@ -1126,7 +1235,6 @@ TXN003,ACC003,ACC001,7500.00,2024-01-15 14:20:00</pre>
         });
       }
 
-      // Show loading on form submit
       if (form) {
         form.addEventListener('submit', function(e) {
           if (fileInput.files.length === 0) {
@@ -1134,14 +1242,28 @@ TXN003,ACC003,ACC001,7500.00,2024-01-15 14:20:00</pre>
             alert('Please select a CSV file first');
             return;
           }
-          
           // Show loading state
-          btnText.style.display = 'none';
-          spinner.style.display = 'inline-block';
+          if (btnText && spinner) {
+            btnText.style.display = 'none';
+            spinner.style.display = 'inline-block';
+          }
           submitBtn.disabled = true;
           submitBtn.innerHTML = '<span class="spinner"></span> Processing...';
         });
       }
+
+      // FAQ accordion functionality
+      const faqItems = document.querySelectorAll('.faq-item');
+      faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        question.addEventListener('click', () => {
+          // close others? optional, but we allow multiple open; to make accordion style (only one open) uncomment next lines
+          // faqItems.forEach(i => {
+          //   if (i !== item) i.classList.remove('active');
+          // });
+          item.classList.toggle('active');
+        });
+      });
 
       // Check for error parameter and scroll to upload
       const urlParams = new URLSearchParams(window.location.search);
