@@ -11,7 +11,7 @@ public class DatabaseConfig {
     // Detect if running on Render
     private static final boolean IS_RENDER = System.getenv("RENDER") != null;
     
-    // TiDB Cloud requires SSL
+    // Use SSL mode REQUIRED (matches your working terminal command)
     public static final String URL = buildUrl();
     public static final String USERNAME = buildUsername();
     public static final String PASSWORD = buildPassword();
@@ -21,12 +21,12 @@ public class DatabaseConfig {
         // On Render, use environment variables
         if (IS_RENDER && DB_HOST != null && DB_PORT != null && DB_NAME != null) {
             return "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + 
-                   "?sslMode=VERIFY_IDENTITY&useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2&serverTimezone=UTC";
+                   "?sslMode=REQUIRED&useSSL=true&serverTimezone=UTC"; // CHANGED to REQUIRED
         }
         
-        // Fallback for local development (CHANGE THESE TO YOUR ACTUAL TiDB CREDENTIALS)
+        // Fallback for local development - USE YOUR ACTUAL CREDENTIALS
         return "jdbc:mysql://gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/test" +
-               "?sslMode=VERIFY_IDENTITY&useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2&serverTimezone=UTC";
+               "?sslMode=REQUIRED&useSSL=true&serverTimezone=UTC"; // CHANGED to REQUIRED
     }
     
     private static String buildUsername() {
@@ -34,7 +34,7 @@ public class DatabaseConfig {
             return DB_USER;
         }
         // Your TiDB username for local testing
-        return "GfKM8ds5z2m614G.root"; // REPLACE WITH YOUR ACTUAL USERNAME
+        return "GdLq3ttfVGdV1pD.root"; // REPLACE with your actual username
     }
     
     private static String buildPassword() {
@@ -42,6 +42,6 @@ public class DatabaseConfig {
             return DB_PASSWORD;
         }
         // Your TiDB password for local testing
-        return "your-actual-password"; // REPLACE WITH YOUR ACTUAL PASSWORD
+        return "YOUR_ACTUAL_PASSWORD"; // REPLACE with your actual password
     }
 }
