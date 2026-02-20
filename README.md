@@ -77,6 +77,15 @@ Algorithm: Path finding with shell account validation
 - Time Complexity: O(V * E) with pruning
 Use Case: Flags money passing through low-activity intermediary accounts
 
+5. Force-Directed Graph Layout (Visualization & Suspicion Highlighting)
+Algorithm: Force-Directed Graph (e.g., Fruchterman-Reingold / Spring Layout)
+Nodes (accounts) repel each other, edges (transactions) act like springs to maintain structure
+Iteratively adjust node positions to minimize energy and improve readability
+Can highlight suspicious cycles or clusters by coloring or sizing nodes/edges based on suspicion score
+Time Complexity: O(V²) per iteration (can be reduced with optimizations like Barnes-Hut)
+Space Complexity: O(V + E) for storing nodes, edges, and position vectors
+Use Case: Provides intuitive visualization of complex transaction networks; clusters or tightly connected nodes may indicate money-laundering rings, shell accounts, or circular routing (A→B→C→A).
+
 
 
 # Suspicion Score Methodology
